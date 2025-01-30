@@ -607,85 +607,46 @@ if (statusViewEnabled || bot.statusview) {
 }
 
 
-// Function to check if auto-reaction is enabled
-function isAutoReactionEnabled() {
-  return (
-    (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
-    (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
-  );
-}
 
-// Function to check if the message is valid for auto-reaction
-function isValidMessage(m) {
-  return (
-    (m.text && typeof m.text === 'string') ||
-    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) ||
+  
+if (
+  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
+  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
+) {
+  if (
+    (m.text && typeof m.text === 'string' && m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|E|I|O|U|t|u|v|w|x|y|z)/gi)) || 
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
     (m.isForwarded)
-  );
-}
+  ) {
+    const emojiList = [
+      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+      "🤭", "🥹"
+    ];
 
-// Function to extract the first emoji from the message text
-function extractEmoji(text) {
-  const emojiMatch = text?.match(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
-  return emojiMatch?.[0];
-}
-
-// Function to send a reaction
-async function sendReaction(chat, emoji, key) {
-  try {
-    await this.sendMessage(chat, {
+    this.sendMessage(m.chat, {
       react: {
-        text: emoji,
-        key: key || {}
+        text: (m.sender === '923006838210@s.whatsapp.net') 
+          ? "👑" 
+          : (m.sender === '923277968349@s.whatsapp.net')
+          ? "👑"
+          : (m.sender === '923126522826@s.whatsapp.net')
+          ? "🇵🇰"
+          : (m.sender === '923126329047@s.whatsapp.net')
+          ? "🇵🇰"
+          : pickRandom(emojiList),
+        key: m.key || {}
       }
     });
-    return true; // Reaction sent successfully
-  } catch (error) {
-    console.error("Failed to send reaction:", error);
-    return false; // Reaction failed
   }
 }
 
-// Main auto-reaction logic
-if (isAutoReactionEnabled() && isValidMessage(m)) {
-  const emojiList = [
-    "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-    "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-    "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-    "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-    "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-    "🤭", "🥹"
-  ];
-
-  // Debugging: Log message text
-  if (process.env.NODE_ENV !== 'production') {
-    console.log("Message Text:", m.text);
-  }
-
-  // Extract first emoji from message or pick a random one
-  const messageEmoji = extractEmoji(m.text) || pickRandom(emojiList);
-
-  // Debugging: Log emoji match and selected emoji
-  if (process.env.NODE_ENV !== 'production') {
-    console.log("Emoji Match:", extractEmoji(m.text));
-    console.log("Selected Emoji:", messageEmoji);
-  }
-
-  // Check if the message has already been reacted to
-  if (!m.hasReacted) {
-    const reactionSent = await sendReaction.call(this, m.chat, messageEmoji, m.key);
-    if (reactionSent) {
-      m.hasReacted = true; // Mark as reacted
-    }
-  } else {
-    console.log("Message already reacted, skipping.");
-  }
-}
-
-// Function to pick a random item from a list
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
-}	    
+}    
 
 
 
