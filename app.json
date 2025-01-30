@@ -24,17 +24,17 @@
     "OWNER_NUMBER": {
       "description": "put your Number and name for Owner",
       "required": true,
-      "value": "6281220527432,Prince♥️The Developer"
+      "value": "923006838210,FAISAL"
     },
     "MODE": {
       "description": "choose bot mode public or private",
       "required": true,
-      "value": "public"
+      "value": "private"
     },
     "PREFIX": {
       "description": "put any one symbol here leave it Blank if you want to use multiple prefix",
       "required": false,
-      "value": "" 
+      "value": "," 
     },
     "antidelete": {
       "description": "Set 'private' to forward deleted messages only from private chats, 'all' to forward from both private and group chats, or 'false' to disable this feature.",
@@ -49,21 +49,21 @@
     "ANTI_LINK": {
       "description": "it will dlt links and kick user",
       "required": false,
-      "value": "true"
+      "value": "false"
     },
     "AutoReaction": {
       "description": "make it true to react on chats",
       "required": false,
-      "value": "false"
+      "value": "true"
     },
     "VAR_APP": {
       "description": "put same app name you entered above",
-      "required": true,
+      "required": false,
       "value": ""
     },
     "VAR_KEY": {
       "description": "put heroku key click on accounts scroll down copy that key past here",
-      "required": true,
+      "required": false,
       "value": ""
     },
     "STATUSVIEW": {
@@ -74,12 +74,12 @@
     "StatusEmojies": {
       "description": "Add your favorites emojies for status likes",
       "required": false,
-      "value": "♥️,🤗,❤️,💞,❣️,💙,💛,🤍,💚,😍,🥰,💝,💖,💗,💓,💞,💕,❣️,💘,💟,🖤,🤎,💜,💫,🌸"
+      "value": ""
     },
     "STATUS_MSG": {
       "description": "Status reply msg",
       "required": false,
-      "value": "Your Status has been seen by Prince bot"
+      "value": "> *⚖️𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 - : ©𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃*"
     },
     "REJECTSCALLS": {
       "description": "reject calls",
@@ -109,7 +109,7 @@
     "DL_MSG": {
       "description": "Video downloader caption",
       "required": true,
-      "value": "_*📥DOWNLOADED SUCCESSFULLY✅*_"
+      "value": "> *⚖️𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 - : ©𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃*"
     } 
   },
   "buildpacks": [
