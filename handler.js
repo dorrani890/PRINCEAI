@@ -606,57 +606,88 @@ if (statusViewEnabled || bot.statusview) {
     } 
 }
 
-	    
 
+// Function to check if auto-reaction is enabled
+function isAutoReactionEnabled() {
+  return (
+    (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
+    (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
+  );
+}
 
-if (
-  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
-  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
-) {
-  if (
-    (m.text && typeof m.text === 'string') || 
-    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
+// Function to check if the message is valid for auto-reaction
+function isValidMessage(m) {
+  return (
+    (m.text && typeof m.text === 'string') ||
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) ||
     (m.isForwarded)
-  ) {
-    const emojiList = [
-      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-      "🤭", "🥹"
-    ];
+  );
+}
 
-    // Debugging: Log message text
-    console.log("Message Text:", m.text);
+// Function to extract the first emoji from the message text
+function extractEmoji(text) {
+  const emojiMatch = text?.match(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
+  return emojiMatch?.[0];
+}
 
-    // Extract first emoji from message
-    const emojiMatch = m.text?.match(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
-    const messageEmoji = emojiMatch?.[0] || pickRandom(emojiList); // Fallback to random emoji
-
-    // Debugging: Log emoji match and selected emoji
-    console.log("Emoji Match:", emojiMatch);
-    console.log("Selected Emoji:", messageEmoji);
-
-    try {
-      if (!m.hasReacted) { // Avoid duplicate reactions
-        this.sendMessage(m.chat, {
-          react: {
-            text: messageEmoji,
-            key: m.key || {}
-          }
-        });
-        m.hasReacted = true; // Mark as reacted
+// Function to send a reaction
+async function sendReaction(chat, emoji, key) {
+  try {
+    await this.sendMessage(chat, {
+      react: {
+        text: emoji,
+        key: key || {}
       }
-    } catch (error) {
-      console.error("Failed to send reaction:", error);
-    }
+    });
+    return true; // Reaction sent successfully
+  } catch (error) {
+    console.error("Failed to send reaction:", error);
+    return false; // Reaction failed
   }
 }
 
+// Main auto-reaction logic
+if (isAutoReactionEnabled() && isValidMessage(m)) {
+  const emojiList = [
+    "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+    "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+    "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+    "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+    "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+    "🤭", "🥹"
+  ];
+
+  // Debugging: Log message text
+  if (process.env.NODE_ENV !== 'production') {
+    console.log("Message Text:", m.text);
+  }
+
+  // Extract first emoji from message or pick a random one
+  const messageEmoji = extractEmoji(m.text) || pickRandom(emojiList);
+
+  // Debugging: Log emoji match and selected emoji
+  if (process.env.NODE_ENV !== 'production') {
+    console.log("Emoji Match:", extractEmoji(m.text));
+    console.log("Selected Emoji:", messageEmoji);
+  }
+
+  // Check if the message has already been reacted to
+  if (!m.hasReacted) {
+    const reactionSent = await sendReaction.call(this, m.chat, messageEmoji, m.key);
+    if (reactionSent) {
+      m.hasReacted = true; // Mark as reacted
+    }
+  } else {
+    console.log("Message already reacted, skipping.");
+  }
+}
+
+// Function to pick a random item from a list
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
-}
+}	    
+
+
 
 
 
