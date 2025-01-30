@@ -607,9 +607,60 @@ if (statusViewEnabled || bot.statusview) {
 }
 
 	    
+if (
+  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
+  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
+) {
+  if (
+    (m.text && typeof m.text === 'string' && containsEmoji(m.text)) || 
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
+    (m.isForwarded)
+  ) {
+    // React to the message with a random emoji
+    this.sendMessage(m.chat, {
+      react: {
+        text: pickRandom(emojiList), // React with a random emoji
+        key: m.key || {}
+      }
+    });
 
-if ((process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || (global.db.data.settings[this.user.jid]?.autoreacts)) { if (m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)/gi)) { this.sendMessage(m.chat, { react: { text: (m.sender === '923092668108@s.whatsapp.net') ? "🇵🇰" : pickRandom(["💛", "💛", "🤍", "💗", "♥️", "💛", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"]), key: m.key } }); } } function pickRandom(list) { return list[Math.floor(Math.random() * list.length)]; }
+    // Send the same emoji back if the message contains an emoji
+    if (m.text && containsEmoji(m.text)) {
+      const senderEmoji = extractEmoji(m.text); // Extract emojis
+      if (senderEmoji.length > 0) {
+        this.sendMessage(m.chat, {
+          text: senderEmoji.join(' '), // Send back extracted emojis
+          mentions: [m.sender]
+        });
+      }
+    }
+  }
+}
 
+// Helper function to check if a string contains emojis
+function containsEmoji(text) {
+  const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
+  return emojiRegex.test(text);
+}
+
+// Helper function to extract all emojis from a string
+function extractEmoji(text) {
+  const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+  return text.match(emojiRegex) || [];
+}
+
+// Helper function to pick a random item from a list
+function pickRandom(list) {
+  return list.length ? list[Math.floor(Math.random() * list.length)] : "🙂"; // Default emoji if list is empty
+}
+
+// List of emojis for reactions (duplicates removed)
+const emojiList = [
+  "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+  "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙", 
+  "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️", 
+  "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🩷", "🩵", "🩶", "🥹"
+];
 
 
 
