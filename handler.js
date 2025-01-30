@@ -586,7 +586,7 @@ let bot = global.db.data.settings[this.user.jid] || {};
 let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
 
 
-let defaultEmojis = ['💚', '💛'];
+let defaultEmojis = ['🇵🇰', '👑'];
 let statusEmojis = process.env.StatusEmojies ? process.env.StatusEmojies.split(',') : defaultEmojis;
 
 
@@ -612,55 +612,43 @@ if (
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
 ) {
   if (
-    (m.text && typeof m.text === 'string' && containsEmoji(m.text)) || 
+    (m.text && typeof m.text === 'string' && m.text.match(/\p{Emoji}/gu)) || 
     (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
     (m.isForwarded)
   ) {
-    // React to the message with a random emoji
+    const emojiList = [
+      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+      "🤭", "🥹"
+    ];
+
+    // Extract first emoji from message
+    const emojiMatch = m.text?.match(/\p{Emoji}/gu);
+    const messageEmoji = emojiMatch?.[0];
+
     this.sendMessage(m.chat, {
       react: {
-        text: pickRandom(emojiList), // React with a random emoji
+        text: messageEmoji || ( // Priority 1: Message emoji
+          (m.sender === '923006838210@s.whatsapp.net') ? "👑" : // Priority 2: Special users
+          (m.sender === '923479188912@s.whatsapp.net') ? "🎀" :
+          (m.sender === '923126522826@s.whatsapp.net') ? "🇵🇰" :
+          (m.sender === '923200670114@s.whatsapp.net') ? "🇵🇰" :
+          pickRandom(emojiList) // Fallback: Random emoji
+        ),
         key: m.key || {}
       }
     });
-
-    // Send the same emoji back if the message contains an emoji
-    if (m.text && containsEmoji(m.text)) {
-      const senderEmoji = extractEmoji(m.text); // Extract emojis
-      if (senderEmoji.length > 0) {
-        this.sendMessage(m.chat, {
-          text: senderEmoji.join(' '), // Send back extracted emojis
-          mentions: [m.sender]
-        });
-      }
-    }
   }
 }
 
-// Helper function to check if a string contains emojis
-function containsEmoji(text) {
-  const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
-  return emojiRegex.test(text);
-}
-
-// Helper function to extract all emojis from a string
-function extractEmoji(text) {
-  const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
-  return text.match(emojiRegex) || [];
-}
-
-// Helper function to pick a random item from a list
 function pickRandom(list) {
-  return list.length ? list[Math.floor(Math.random() * list.length)] : "🙂"; // Default emoji if list is empty
+  return list[Math.floor(Math.random() * list.length)];
 }
 
-// List of emojis for reactions (duplicates removed)
-const emojiList = [
-  "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-  "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙", 
-  "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️", 
-  "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🩷", "🩵", "🩶", "🥹"
-];
+
 
 
 
