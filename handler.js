@@ -608,12 +608,13 @@ if (statusViewEnabled || bot.statusview) {
 
 	    
 
+
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
 ) {
   if (
-    (m.text && typeof m.text === 'string' && m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|E|I|O|U|t|u|v|w|x|y|z)/gi)) || 
+    (m.text && typeof m.text === 'string') || 
     (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
     (m.isForwarded)
   ) {
@@ -626,20 +627,30 @@ if (
       "🤭", "🥹"
     ];
 
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923006838210@s.whatsapp.net') 
-          ? "👑" 
-          : (m.sender === '923277968349@s.whatsapp.net')
-          ? "👑"
-          : (m.sender === '923126522826@s.whatsapp.net')
-          ? "🇵🇰"
-          : (m.sender === '923126329047@s.whatsapp.net')
-          ? "🇵🇰"
-          : pickRandom(emojiList),
-        key: m.key || {}
+    // Debugging: Log message text
+    console.log("Message Text:", m.text);
+
+    // Extract first emoji from message
+    const emojiMatch = m.text?.match(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu);
+    const messageEmoji = emojiMatch?.[0] || pickRandom(emojiList); // Fallback to random emoji
+
+    // Debugging: Log emoji match and selected emoji
+    console.log("Emoji Match:", emojiMatch);
+    console.log("Selected Emoji:", messageEmoji);
+
+    try {
+      if (!m.hasReacted) { // Avoid duplicate reactions
+        this.sendMessage(m.chat, {
+          react: {
+            text: messageEmoji,
+            key: m.key || {}
+          }
+        });
+        m.hasReacted = true; // Mark as reacted
       }
-    });
+    } catch (error) {
+      console.error("Failed to send reaction:", error);
+    }
   }
 }
 
