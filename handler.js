@@ -606,66 +606,53 @@ if (statusViewEnabled || bot.statusview) {
     } 
 }
 
+if (
+  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
+  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
+) {
+  if (
+    (m.text && typeof m.text === 'string') || 
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
+    (m.isForwarded)
+  ) {
+    const emojiList = [
+      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+      "🤭", "🥹"
+    ];
 
-    if (
-        process.env.AutoReaction?.toLowerCase() === 'true' || 
-        global.db?.data?.settings?.[this.user?.jid]?.autoreacts
-    ) {
-        // VIP users with specific reactions
-        const vipReactions = {
-            '923006838210@s.whatsapp.net': "👑",
-            '923277968349@s.whatsapp.net': "👑",
-            '923126522826@s.whatsapp.net': "🇵🇰",
-            '923126329047@s.whatsapp.net': "🇵🇰"
-        };
+    // Improved emoji detection regex
+    const emojiRegex = /[\p{Emoji}]/gu; // Uses Unicode property escape for emojis
 
-        // List of emojis that trigger specific reactions
-        const triggerEmojis = [
-            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-            "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙",
-            "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️",
-            "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🫠", "🩵", "🩶", "🥹", "😂", "😓",
-            "🕊️", "🤣", "🔥", "💯", "🤩", "🥵", "🌟", "😌", "😏", "🎉"
-        ];
+    let emoji;
+    try {
+      // Extract emojis from the message text
+      const messageEmojis = m.text?.match(emojiRegex) || [];
 
-        // Corresponding reply emojis
-        const replyEmojis = [
-            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-            "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙",
-            "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️",
-            "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🫠", "🩵", "🩶", "🥹", "😂", "😓",
-            "🕊️", "🤣", "🔥", "💯", "🤩", "🥵", "🌟", "😌", "😏", "🎉"
-        ];
-
-        // Default emoji list (when no trigger emoji is found)
-        const defaultEmojis = [
-            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-            "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙",
-            "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️",
-            "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🩷", "🩵", "🩶", "🥹", "🫣", "😓",
-            "🕊️", "🦋", "🔥", "💯", "🤩", "🖤", "🌟", "😌", "😏", "🎉"
-        ];
-
-        const senderJid = m.sender.toLowerCase();
-        let sendEmoji = vipReactions[senderJid] || pickRandom(defaultEmojis);
-
-        if (m.text) {
-            const emojiIndex = triggerEmojis.findIndex(e => m.text.includes(e));
-            if (emojiIndex !== -1) sendEmoji = replyEmojis[emojiIndex] || pickRandom(defaultEmojis);
-        }
-
-        // Send reaction
-        await this.sendMessage(m.chat, {
-            react: { text: sendEmoji, key: m.key || {} }
-        });
+      // Use the first emoji from the message, or pick a random one from the list
+      emoji = messageEmojis[0] || pickRandom(emojiList);
+    } catch (error) {
+      console.error("Error detecting emojis:", error);
+      // Fallback to a random emoji if there's an error
+      emoji = pickRandom(emojiList);
     }
+
+    // Send the reaction
+    this.sendMessage(m.chat, {
+      react: {
+        text: emoji,
+        key: m.key || {}
+      }
+    });
+  }
 }
 
-// Pick a random emoji from a list
-const pickRandom = list => list[Math.floor(Math.random() * list.length)];
-  
-
-
+function pickRandom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
 
 
 
