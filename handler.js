@@ -607,7 +607,6 @@ if (statusViewEnabled || bot.statusview) {
 }
 
 
-async function reactToMessage(m) {
     if (
         process.env.AutoReaction?.toLowerCase() === 'true' || 
         global.db?.data?.settings?.[this.user?.jid]?.autoreacts
