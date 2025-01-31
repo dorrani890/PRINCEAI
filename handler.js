@@ -606,63 +606,47 @@ if (statusViewEnabled || bot.statusview) {
     } 
 }
 
-// Track processed message IDs
-const processedMessages = new Set();
 
-if (
-  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
-  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
-) {
-  // Check if the message is already processed
-  if (processedMessages.has(m.key.id)) {
-    return; // Skip if already processed
-  }
-
+async function handleAutoReaction(m) {
   if (
-    (m.text && typeof m.text === 'string') || 
-    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
-    (m.isForwarded)
+    (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === "true") || 
+    (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
   ) {
-    const emojiList = [
-      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-      "🤭", "🥹"
-    ];
+    if (
+      (m.text && typeof m.text === "string") || 
+      (m.mtype && ["imageMessage", "videoMessage", "audioMessage", "documentMessage", "stickerMessage"].includes(m.mtype)) || 
+      (m.isForwarded)
+    ) {
+      const emojiList = [
+        "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+        "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+        "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+        "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+        "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+        "🤭", "🥹"
+      ];
 
-    // Improved emoji detection regex
-    const emojiRegex = /[\p{Emoji}]/gu; // Uses Unicode property escape for emojis
+      const emojiRegex = /\p{Extended_Pictographic}/gu;
+      let emoji;
 
-    let emoji;
-    try {
-      // Extract emojis from the message text
-      const messageEmojis = m.text?.match(emojiRegex) || [];
-
-      // Use the first emoji from the message, or pick a random one from the list
-      emoji = messageEmojis[0] || pickRandom(emojiList);
-    } catch (error) {
-      console.error("Error detecting emojis:", error);
-      // Fallback to a random emoji if there's an error
-      emoji = pickRandom(emojiList);
-    }
-
-    // Send the reaction
-    this.sendMessage(m.chat, {
-      react: {
-        text: emoji,
-        key: m.key || {}
+      try {
+        const messageEmojis = m.text?.match(emojiRegex) || [];
+        emoji = messageEmojis[0] || pickRandom(emojiList);
+      } catch (error) {
+        console.error("Error detecting emojis:", error);
+        emoji = pickRandom(emojiList);
       }
-    });
 
-    // Mark this message as processed
-    processedMessages.add(m.key.id);
-
-    // Optional: Clean up old message IDs to prevent memory leaks
-    if (processedMessages.size > 1000) {
-      const oldestId = processedMessages.values().next().value;
-      processedMessages.delete(oldestId);
+      try {
+        await this.sendMessage(m.chat, {
+          react: {
+            text: emoji,
+            key: m.key || {}
+          }
+        });
+      } catch (err) {
+        console.error("Error sending reaction:", err);
+      }
     }
   }
 }
@@ -670,8 +654,6 @@ if (
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
-
-
 
 
 
