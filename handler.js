@@ -606,10 +606,18 @@ if (statusViewEnabled || bot.statusview) {
     } 
 }
 
+// Track processed message IDs
+const processedMessages = new Set();
+
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
 ) {
+  // Check if the message is already processed
+  if (processedMessages.has(m.key.id)) {
+    return; // Skip if already processed
+  }
+
   if (
     (m.text && typeof m.text === 'string') || 
     (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
@@ -647,12 +655,22 @@ if (
         key: m.key || {}
       }
     });
+
+    // Mark this message as processed
+    processedMessages.add(m.key.id);
+
+    // Optional: Clean up old message IDs to prevent memory leaks
+    if (processedMessages.size > 1000) {
+      const oldestId = processedMessages.values().next().value;
+      processedMessages.delete(oldestId);
+    }
   }
 }
 
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
+
 
 
 
