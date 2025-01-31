@@ -40,11 +40,10 @@
 <div align="center" style="margin: 20px 0;">
   <a href="https://gd-sdeploy.vercel.app/">
     <img src="https://img.shields.io/badge/HEROKU-430098?style=for-the-badge&logo=heroku&logoColor=white">
-
-  </a>
-  <a href="https://app.koyeb.com/deploy">
-    <img src="https://img.shields.io/badge/KOYEB-000000?style=for-the-badge&logo=koyeb">
-  </a>
+</a>
+<a href="https://app.koyeb.com/deploy?type=git&repository=https://github.com/DASTAGHIR/PRINCEMD&branch=main&name=princegds&builder=dockerfile&env[SESSION_ID]=&env[BOT_NAME]=PRINCE-MD&env[OWNER_NUMBER]=6281220527432%3B%E2%9D%A3%EF%B8%8FPRINCE+THE+DEVELOPER&env[MODE]=public&env[PREFIX]=&env[antidelete]=all&env[DATABASE_URL]=&env[ANTI_LINK]=true&env[AutoReaction]=false&env[STATUSVIEW]=true&env[STATUS_MSG]=Your+Status+has+been+seen+by+Prince+bot&env[REJECTSCALLS]=false&env[CALLMSG]=For+now+calls+are+restricted+by+my+owner&env[ANTIFAKE_USERS]=1%2C212%2C63%2C44&env[AUTO_APPROVE_USERS]=92%2C880&env[PACK_NAME]=Prince%F0%9F%92%96&env[DL_MSG]=_📥DOWNLOADED+SUCCESSFULLY✅_&env[STATUSVIEW]=true&env[StatusEmojies]=♥️%2C🤗%2C❤️%2C💞%2C❣️%2C💙%2C💛%2C🤍%2C💚%2C😍%2C🥰%2C💝%2C💖%2C💗%2C💓%2C💞%2C💕%2C❣️%2C💘%2C💟%2C🖤%2C🤎%2C💜%2C💫%2C🌸">
+    <img src="https://img.shields.io/badge/KOYEB-000000?style=for-the-badge&logo=koyeb" style="vertical-align: middle; margin-right: 10px;">
+</a>
 </div>
 
 ---
