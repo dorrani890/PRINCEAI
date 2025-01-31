@@ -607,46 +607,65 @@ if (statusViewEnabled || bot.statusview) {
 }
 
 
+async function reactToMessage(m) {
+    if (
+        process.env.AutoReaction?.toLowerCase() === 'true' || 
+        global.db?.data?.settings?.[this.user?.jid]?.autoreacts
+    ) {
+        // VIP users with specific reactions
+        const vipReactions = {
+            '923006838210@s.whatsapp.net': "👑",
+            '923277968349@s.whatsapp.net': "👑",
+            '923126522826@s.whatsapp.net': "🇵🇰",
+            '923126329047@s.whatsapp.net': "🇵🇰"
+        };
 
-  
-if (
-  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
-  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
-) {
-  if (
-    (m.text && typeof m.text === 'string' && m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|E|I|O|U|t|u|v|w|x|y|z)/gi)) || 
-    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
-    (m.isForwarded)
-  ) {
-    const emojiList = [
-      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-      "🤭", "🥹"
-    ];
+        // List of emojis that trigger specific reactions
+        const triggerEmojis = [
+            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+            "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙",
+            "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️",
+            "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🩷", "🩵", "🩶", "🥹", "😂", "😓",
+            "🕊️", "🚀", "🔥", "💯", "🤩", "🥵", "🌟", "😌", "😏", "🎉"
+        ];
 
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923006838210@s.whatsapp.net') 
-          ? "👑" 
-          : (m.sender === '923277968349@s.whatsapp.net')
-          ? "👑"
-          : (m.sender === '923126522826@s.whatsapp.net')
-          ? "🇵🇰"
-          : (m.sender === '923126329047@s.whatsapp.net')
-          ? "🇵🇰"
-          : pickRandom(emojiList),
-        key: m.key || {}
-      }
-    });
-  }
+        // Corresponding reply emojis
+        const replyEmojis = [
+            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+            "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙",
+            "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️",
+            "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🩷", "🩵", "🩶", "🥹", "😂", "😓",
+            "🕊️", "🚀", "🔥", "💯", "🤩", "🥵", "🌟", "😌", "😏", "🎉"
+        ];
+
+        // Default emoji list (when no trigger emoji is found)
+        const defaultEmojis = [
+            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+            "💞", "💖", "💓", "⚡️", "🌚", "😇", "❤️‍🔥", "🖤", "🧡", "💛", "💚", "💙",
+            "💜", "🤍", "💟", "😎", "😍", "🥀", "🦋", "💘", "❤‍🩹", "😒", "🙈", "❣️",
+            "🙌", "👻", "🥺", "🫣", "🙃", "👀", "🤎", "🩷", "🩵", "🩶", "🥹", "😂", "😓",
+            "🕊️", "🚀", "🔥", "💯", "🤩", "🥵", "🌟", "😌", "😏", "🎉"
+        ];
+
+        const senderJid = m.sender.toLowerCase();
+        let sendEmoji = vipReactions[senderJid] || pickRandom(defaultEmojis);
+
+        if (m.text) {
+            const emojiIndex = triggerEmojis.findIndex(e => m.text.includes(e));
+            if (emojiIndex !== -1) sendEmoji = replyEmojis[emojiIndex] || pickRandom(defaultEmojis);
+        }
+
+        // Send reaction
+        await this.sendMessage(m.chat, {
+            react: { text: sendEmoji, key: m.key || {} }
+        });
+    }
 }
 
-function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-}    
+// Pick a random emoji from a list
+const pickRandom = list => list[Math.floor(Math.random() * list.length)];
+  
+
 
 
 
