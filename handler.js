@@ -609,35 +609,39 @@ if (statusViewEnabled || bot.statusview) {
 
 async function handleAutoReaction(m) {
   if (
-    (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === "true") || 
+    (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
     (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
   ) {
-    if (
-      (m.text && typeof m.text === "string") || 
-      (m.mtype && ["imageMessage", "videoMessage", "audioMessage", "documentMessage", "stickerMessage"].includes(m.mtype)) || 
-      (m.isForwarded)
-    ) {
-      const emojiList = [
-        "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-        "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-        "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-        "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-        "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-        "🤭", "🥹"
-      ];
+    if (m.t) {
+      // Improved emoji detection regex
+      const emojiRegex = /[\p{Emoji}]/gu; // Unicode property escape for emojis
 
-      const emojiRegex = /\p{Extended_Pictographic}/gu;
       let emoji;
-
       try {
+        // Extract emojis from the message text
         const messageEmojis = m.text?.match(emojiRegex) || [];
-        emoji = messageEmojis[0] || pickRandom(emojiList);
+
+        // Use the first emoji found in the message, or pick a random one from the list
+        emoji = messageEmojis.length > 0 ? messageEmojis[0] : (m.sender === '923092668108@s.whatsapp.net' ? "🇵🇰" : pickRandom([
+          "💛", "💛", "🤍", "💗", "♥️", "💛", "💞", "💖", "💓", "❤️", "🧡", 
+          "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", 
+          "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", 
+          "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"
+        ]));
+
       } catch (error) {
         console.error("Error detecting emojis:", error);
-        emoji = pickRandom(emojiList);
+        // Fallback to a random emoji if there's an error
+        emoji = m.sender === '923092668108@s.whatsapp.net' ? "🇵🇰" : pickRandom([
+          "💛", "💛", "🤍", "💗", "♥️", "💛", "💞", "💖", "💓", "❤️", "🧡", 
+          "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", 
+          "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", 
+          "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"
+        ]);
       }
 
       try {
+        // Send the reaction with the chosen emoji
         await this.sendMessage(m.chat, {
           react: {
             text: emoji,
@@ -651,10 +655,10 @@ async function handleAutoReaction(m) {
   }
 }
 
+// Function to pick a random emoji from the list
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
-
 
 
 
