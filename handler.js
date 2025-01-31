@@ -577,88 +577,82 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
     } catch (error) {
     }
 }*/	    
+     
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-	
-         
-let bot = global.db.data.settings[this.user.jid] || {}; 
-let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
+	let bot = global.db.data.settings[this.user.jid] || {};
+if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        await conn.readMessages([m.key]);
 
+        // Fetch emoji from .env or use default
+        const emoji = process.env.FIXED_EMOJI || '🇵🇰';
+        const me = await conn.decodeJid(conn.user.id);
 
-let defaultEmojis = ['🇵🇰', '👑'];
-let statusEmojis = process.env.StatusEmojies ? process.env.StatusEmojies.split(',') : defaultEmojis;
-
-
-if (statusViewEnabled || bot.statusview) { 
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-        await conn.readMessages([m.key]); 
-
-        
-        if (bot.like) { 
-            const randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)]; 
-            const me = await conn.decodeJid(conn.user.id);
-
-            await conn.sendMessage(m.key.remoteJid, { 
-                react: { key: m.key, text: randomEmoji } 
-            }, { statusJidList: [m.key.participant, me] });
-        }
-    } 
-}
-
-
-async function handleAutoReaction(m) {
-  if (
-    (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
-    (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
-  ) {
-    if (m.t) {
-      // Improved emoji detection regex
-      const emojiRegex = /[\p{Emoji}]/gu; // Unicode property escape for emojis
-
-      let emoji;
-      try {
-        // Extract emojis from the message text
-        const messageEmojis = m.text?.match(emojiRegex) || [];
-
-        // Use the first emoji found in the message, or pick a random one from the list
-        emoji = messageEmojis.length > 0 ? messageEmojis[0] : (m.sender === '923092668108@s.whatsapp.net' ? "🇵🇰" : pickRandom([
-          "💛", "💛", "🤍", "💗", "♥️", "💛", "💞", "💖", "💓", "❤️", "🧡", 
-          "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", 
-          "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", 
-          "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"
-        ]));
-
-      } catch (error) {
-        console.error("Error detecting emojis:", error);
-        // Fallback to a random emoji if there's an error
-        emoji = m.sender === '923092668108@s.whatsapp.net' ? "🇵🇰" : pickRandom([
-          "💛", "💛", "🤍", "💗", "♥️", "💛", "💞", "💖", "💓", "❤️", "🧡", 
-          "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", 
-          "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", 
-          "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"
-        ]);
-      }
-
-      try {
-        // Send the reaction with the chosen emoji
-        await this.sendMessage(m.chat, {
-          react: {
-            text: emoji,
-            key: m.key || {}
-          }
-        });
-      } catch (err) {
-        console.error("Error sending reaction:", err);
-      }
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
     }
+} else if (bot.statusview) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        await conn.readMessages([m.key]);
+
+        // Fetch emoji from .env or use default
+        const emoji = process.env.FIXED_EMOJI || '🇵🇰';
+        const me = await conn.decodeJid(conn.user.id);
+
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
+    }
+}
+         
+
+
+if (
+  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
+  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
+) {
+  if (
+    (m.text && typeof m.text === 'string' && m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|E|I|O|U|t|u|v|w|x|y|z)/gi)) || 
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
+    (m.isForwarded)
+  ) {
+    const emojiList = [
+      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+      "🤭", "🥹"
+    ];
+
+    this.sendMessage(m.chat, {
+      react: {
+        text: (m.sender === '923006838210@s.whatsapp.net') 
+          ? "👑" 
+          : (m.sender === '923277968349@s.whatsapp.net')
+          ? "👑"
+          : (m.sender === '923126522826@s.whatsapp.net')
+          ? "🇵🇰"
+          : (m.sender === '923126329047@s.whatsapp.net')
+          ? "🇵🇰"
+          : pickRandom(emojiList),
+        key: m.key || {}
+      }
+    });
   }
 }
 
-// Function to pick a random emoji from the list
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
+	    
 
 
 
