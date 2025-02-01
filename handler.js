@@ -662,45 +662,49 @@ function pickRandom(list) {
     }}
 
 
+sock.on('message', async (m) => {
+  // Your existing message processing code here
 
-// Function to handle the emoji reaction based on the EMOJI_REACT environment variable
-function handleEmojiReaction(m) {
-  // Check if the environment variable EMOJI_REACT is set to 'true'
-  if (process.env.EMOJI_REACT && process.env.EMOJI_REACT.toLowerCase() === 'true') {
-    
-    // Regex to detect emojis in the text message
-    const emojiRegex = /[\p{Emoji}]/gu;
-    
-    // Check if the message contains emojis
-    if (m.text && emojiRegex.test(m.text)) {
-      const detectedEmojis = m.text.match(emojiRegex);  // Get all emojis in the message
+  // Define the emojis to be detected and their corresponding reactions
+  var text = m.text || "";  // Ensure you're working with the message text
 
-      if (detectedEmojis && detectedEmojis.length > 0) {
-        // Choose the first detected emoji to react with
-        const emojiToReact = detectedEmojis[0];
+  var emojis = [
+    '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', 
+    '🦋', '🎀', '👑', '🫠', '🗿', '❤️', '🇵🇰', '👿', '❤️‍🩹',
+    '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹', '😮‍💨', '😤', '😈', 
+    '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡', '💛', '💚', '🩵', 
+    '💙', '💜', '🤎', '🖤', '🩶', '🤍', '🩷', '💘', '💝', '💖', '💗', 
+    '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '❤️‍🩹', '💔', '❤️‍🔥', 
+    '💋', '🫦', '👅', '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', '🍒', 
+    '🍎', '🍆', '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', '🎈', 
+    '🎗️', '🇵🇰'
+  ];
 
-        // Ensure bot doesn't react to its own messages
-        if (m.sender !== 'your-bot-number@s.whatsapp.net') {
-          this.sendMessage(m.chat, {
-            react: {
-              text: emojiToReact, // React with the first detected emoji
-              key: m.key || {}
-            }
-          });
-        }
-      }
+  var reply_emojis = [
+    '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', 
+    '🦋', '🎀', '👑', '🫠', '🗿', '❤️', '🇵🇰', '👿', '❤️‍🩹',
+    '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹', '😮‍💨', '😤', '😈', 
+    '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡', '💛', '💚', '🩵', 
+    '💙', '💜', '🤎', '🖤', '🩶', '🤍', '🩷', '💘', '💝', '💖', '💗', 
+    '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '❤️‍🩹', '💔', '❤️‍🔥', 
+    '💋', '🫦', '👅', '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', '🍒', 
+    '🍎', '🍆', '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', '🎈', 
+    '🎗️', '🇵🇰'
+  ];
+
+  // Check if any of the emojis are present in the text
+  for (let i = 0; i < emojis.length; i++) {
+    if (text.includes(emojis[i])) {
+      var send_emoji = reply_emojis[i];
+
+      // Send the emoji as a reaction
+      await sock.sendMessage(m.chat, { react: send_emoji, key: m.key });
+
+      // Break the loop once a match is found
+      break;
     }
   }
-}
-
-// Example usage in your main code:
-// Only check for emoji reactions if EMOJI_REACT is enabled
-if (process.env.EMOJI_REACT && process.env.EMOJI_REACT.toLowerCase() === 'true') {
-  // Only process messages containing emojis
-  if (m.text && typeof m.text === 'string' && /[\p{Emoji}]/gu.test(m.text)) {
-    handleEmojiReaction(m); // Call the function to handle emoji reaction
-  }
-}
+});
 
 
 
