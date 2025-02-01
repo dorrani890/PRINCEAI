@@ -614,61 +614,46 @@ if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
          
 
 
-
-if (!isReact && senderNumber !== botNumber) {
-    if (
-        (process.env.AutoReaction?.toLowerCase() === 'true') || 
-        (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
-    ) {
-        const reactions = [
-            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-            "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-            "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-            "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-            "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-            "🤭", "🥹"
-        ];
-
-        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-        m.react(randomReaction);
-    }
-}
-
-// Owner React
-if (!isReact && senderNumber === botNumber) {
-    if (
-        (process.env.AutoReaction?.toLowerCase() === 'true') || 
-        (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
-    ) {
-        const reactions = [
-            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-            "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-            "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-            "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-            "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-            "🤭", "🥹"
-        ];
-
-        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-        m.react(randomReaction);
-    }
-}
-
-// VIP Reacts
-if (['923006838210@s.whatsapp.net', '923277968349@s.whatsapp.net', '923126522826@s.whatsapp.net', '923126329047@s.whatsapp.net'].includes(m.sender)) {
-    const vipReactions = {
-        '923006838210@s.whatsapp.net': "👑",
-        '923277968349@s.whatsapp.net': "👑",
-        '923126522826@s.whatsapp.net': "🇵🇰",
-        '923126329047@s.whatsapp.net': "🇵🇰"
-    };
+if (
+  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
+  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
+) {
+  if (
+    (m.text && typeof m.text === 'string' && m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|E|I|O|U|t|u|v|w|x|y|z)/gi)) || 
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
+    (m.isForwarded)
+  ) {
+    const emojiList = [
+      "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+      "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+      "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+      "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+      "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+      "🤭", "🥹"
+    ];
 
     this.sendMessage(m.chat, {
-        react: {
-            text: vipReactions[m.sender] || "💖" // Default to 💖 if no specific reaction
-        }
+      react: {
+        text: (m.sender === '923006838210@s.whatsapp.net') 
+          ? "👑" 
+          : (m.sender === '923277968349@s.whatsapp.net')
+          ? "👑"
+          : (m.sender === '923126522826@s.whatsapp.net')
+          ? "🇵🇰"
+          : (m.sender === '923126329047@s.whatsapp.net')
+          ? "🇵🇰"
+          : pickRandom(emojiList),
+        key: m.key || {}
+      }
     });
+  }
 }
+
+function pickRandom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+
 
 
 
