@@ -661,46 +661,6 @@ function pickRandom(list) {
 	    
     }}
 
-var text = "Hello 😍"; 
-
-// List of emojis to detect in the message
-var emojis = [
-  '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', 
-  '🦋', '🎀', '👑', '🫠', '🗿', '❤️', '🇵🇰', '👿', '❤️‍🩹',
-  '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹', '😮‍💨', '😤', '😈', 
-  '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡', '💛', '💚', '🩵', 
-  '💙', '💜', '🤎', '🖤', '🩶', '🤍', '🩷', '💘', '💝', '💖', '💗', 
-  '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '❤️‍🩹', '💔', '❤️‍🔥', 
-  '💋', '🫦', '👅', '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', '🍒', 
-  '🍎', '🍆', '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', '🎈', 
-  '🎗️', '🇵🇰'
-];
-
-// List of corresponding reply emojis for reactions
-var reply_emojis = [
-  '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', 
-  '🦋', '🎀', '👑', '🫠', '🗿', '❤️', '🇵🇰', '👿', '❤️‍🩹',
-  '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹', '😮‍💨', '😤', '😈', 
-  '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡', '💛', '💚', '🩵', 
-  '💙', '💜', '🤎', '🖤', '🩶', '🤍', '🩷', '💘', '💝', '💖', '💗', 
-  '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '❤️‍🩹', '💔', '❤️‍🔥', 
-  '💋', '🫦', '👅', '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', '🍒', 
-  '🍎', '🍆', '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', '🎈', 
-  '🎗️', '🇵🇰'
-];
-
-for (let i = 0; i < emojis.length; i++) {
-  // Check if the text contains any of the emojis in the emojis array
-  if (text.includes(emojis[i])) {
-    var send_emoji = reply_emojis[i];
-    
-    // Send the emoji as a reaction
-    await sock.sendMessage(jid, { react: send_emoji, key: key });
-    
-    // Break the loop once a match is found and reaction is sent
-    break;
-  }
-}
 
 
 
