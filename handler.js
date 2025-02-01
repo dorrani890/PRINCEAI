@@ -613,34 +613,23 @@ if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
 }
          
 
-// Reactions array (Common for both)
-const reactions = [
-    "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
-    "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
-    "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
-    "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
-    "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
-    "🤭", "🥹"
-];
 
-// VIP users and their reactions map
-const vipReactions = {
-    '923006838210@s.whatsapp.net': "👑",
-    '923277968349@s.whatsapp.net': "👑",
-    '923126522826@s.whatsapp.net': "🇵🇰",
-    '923126329047@s.whatsapp.net': "🇵🇰"
-};
-
-// Random reaction function
-const getRandomReaction = () => reactions[Math.floor(Math.random() * reactions.length)];
 
 if (!isReact && senderNumber !== botNumber) {
-    // React based on settings or environment variable
     if (
         (process.env.AutoReaction?.toLowerCase() === 'true') || 
         (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
     ) {
-        const randomReaction = getRandomReaction();
+        const reactions = [
+            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+            "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+            "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+            "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+            "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+            "🤭", "🥹"
+        ];
+
+        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
         m.react(randomReaction);
     }
 }
@@ -651,25 +640,35 @@ if (!isReact && senderNumber === botNumber) {
         (process.env.AutoReaction?.toLowerCase() === 'true') || 
         (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
     ) {
-        const randomReaction = getRandomReaction();
+        const reactions = [
+            "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
+            "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
+            "💚", "💙", "💜", "🖤", "🤍", "💟", "😎", "😍", "💟", "🥀", "🦋", "💘",
+            "❤‍🩹", "😒", "🌸", "🙈", "❣️", "🙌", "👻", "🥺", "🫣", "🙃", "👀",
+            "🤎", "💖", "🎀", "🥺", "🩷", "🖤", "🤍", "🤎", "🩵", "💜", "🩶", "🥹",
+            "🤭", "🥹"
+        ];
+
+        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
         m.react(randomReaction);
     }
 }
 
-// VIP React
-if (vipReactions[m.sender]) {
+// VIP Reacts
+if (['923006838210@s.whatsapp.net', '923277968349@s.whatsapp.net', '923126522826@s.whatsapp.net', '923126329047@s.whatsapp.net'].includes(m.sender)) {
+    const vipReactions = {
+        '923006838210@s.whatsapp.net': "👑",
+        '923277968349@s.whatsapp.net': "👑",
+        '923126522826@s.whatsapp.net': "🇵🇰",
+        '923126329047@s.whatsapp.net': "🇵🇰"
+    };
+
     this.sendMessage(m.chat, {
         react: {
-            text: vipReactions[m.sender] // Specific reaction for VIPs
+            text: vipReactions[m.sender] || "💖" // Default to 💖 if no specific reaction
         }
     });
-} else {
-    // Default reaction for non-VIPs
-    const randomReaction = getRandomReaction();
-    m.react(randomReaction);
 }
-
-
 
 
 
