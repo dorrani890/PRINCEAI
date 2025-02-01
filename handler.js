@@ -663,6 +663,47 @@ function pickRandom(list) {
 
 
 
+// Function to handle the emoji reaction based on the EMOJI_REACT environment variable
+function handleEmojiReaction(m) {
+  // Check if the environment variable EMOJI_REACT is set to 'true'
+  if (process.env.EMOJI_REACT && process.env.EMOJI_REACT.toLowerCase() === 'true') {
+    
+    // Regex to detect emojis in the text message
+    const emojiRegex = /[\p{Emoji}]/gu;
+    
+    // Check if the message contains emojis
+    if (m.text && emojiRegex.test(m.text)) {
+      const detectedEmojis = m.text.match(emojiRegex);  // Get all emojis in the message
+
+      if (detectedEmojis && detectedEmojis.length > 0) {
+        // Choose the first detected emoji to react with
+        const emojiToReact = detectedEmojis[0];
+
+        // Ensure bot doesn't react to its own messages
+        if (m.sender !== 'your-bot-number@s.whatsapp.net') {
+          this.sendMessage(m.chat, {
+            react: {
+              text: emojiToReact, // React with the first detected emoji
+              key: m.key || {}
+            }
+          });
+        }
+      }
+    }
+  }
+}
+
+// Example usage in your main code:
+// Only check for emoji reactions if EMOJI_REACT is enabled
+if (process.env.EMOJI_REACT && process.env.EMOJI_REACT.toLowerCase() === 'true') {
+  // Only process messages containing emojis
+  if (m.text && typeof m.text === 'string' && /[\p{Emoji}]/gu.test(m.text)) {
+    handleEmojiReaction(m); // Call the function to handle emoji reaction
+  }
+}
+
+
+
   /**
  * Handle groups participants update
  * @param {import('@adiwajshing/baileys').BaileysEventMap<unknown>['group-participants.update']} groupsUpdate 
