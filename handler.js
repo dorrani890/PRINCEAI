@@ -618,11 +618,13 @@ if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
 ) {
+  // Check if the message meets the criteria for auto-reaction
   if (
     (m.text && typeof m.text === 'string' && m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|E|I|O|U|t|u|v|w|x|y|z)/gi)) || 
     (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
     (m.isForwarded)
   ) {
+    // Define the emoji list for random reactions
     const emojiList = [
       "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
       "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
@@ -632,23 +634,70 @@ if (
       "🤭", "🥹"
     ];
 
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923006838210@s.whatsapp.net') 
-          ? "👑" 
-          : (m.sender === '923277968349@s.whatsapp.net')
-          ? "👑"
-          : (m.sender === '923126522826@s.whatsapp.net')
-          ? "🇵🇰"
-          : (m.sender === '923126329047@s.whatsapp.net')
-          ? "🇵🇰"
-          : pickRandom(emojiList),
-        key: m.key || {}
+    // Define the emoji matching mechanism
+    const emojis = [
+      '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', '🦋', '🎀', '👑', '🫠', '🗿', 
+      '❤️', '🇵🇰', '👿', '❤️‍🩹', '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹', 
+      '😮‍💨', '😤', '😈', '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡', '💛', 
+      '💚', '🩵', '💙', '💜', '🤎', '🖤', '🩶', '🤍', '🩷', '💘', '💝', 
+      '💖', '💗', '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '❤️‍🩹', '💔', 
+      '❤️‍🔥', '💋', '🫦', '👅', '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', 
+      '🍒', '🍎', '🍆', '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', 
+      '🎈', '🎗️'
+    ];
+
+    const reply_emojis = [
+      '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', '🦋', '🎀', '👑', '🫠', 
+      '🗿', '❤️', '🇵🇰', '👿', '❤️‍🩹', '😍', '🥰', '😉', '🤣', '🫣', 
+      '🥺', '🥹', '😮‍💨', '😤', '😈', '😇', '☠️', '💀', '💫', '🔥', 
+      '💯', '🧡', '💛', '💚', '🩵', '💙', '💜', '🤎', '🖤', '🩶', 
+      '🤍', '🩷', '💘', '💝', '💖', '💗', '💓', '💞', '💕', '💌', 
+      '💟', '♥️', '❣️', '❤️‍🩹', '💔', '❤️‍🔥', '💋', '🫦', '👅', 
+      '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', '🍒', '🍎', '🍆', 
+      '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', '🎈', '🎗️'
+    ];
+
+    let reactionEmoji;
+
+    // Check if the message contains any of the predefined emojis
+    for (let i = 0; i < emojis.length; i++) {
+      if (m.text && m.text.includes(emojis[i])) {
+        reactionEmoji = reply_emojis[i];
+        break;
       }
-    });
+    }
+
+    // If no matching emoji is found, use the existing logic
+    if (!reactionEmoji) {
+      switch (m.sender) {
+        case '923006838210@s.whatsapp.net':
+        case '923277968349@s.whatsapp.net':
+          reactionEmoji = "👑";
+          break;
+        case '923126522826@s.whatsapp.net':
+        case '923126329047@s.whatsapp.net':
+          reactionEmoji = "🇵🇰";
+          break;
+        default:
+          reactionEmoji = pickRandom(emojiList);
+      }
+    }
+
+    // Send the reaction
+    try {
+      this.sendMessage(m.chat, {
+        react: {
+          text: reactionEmoji,
+          key: m.key || {}
+        }
+      });
+    } catch (error) {
+      console.error("Failed to send reaction:", error);
+    }
   }
 }
 
+// Helper function to pick a random item from a list
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
