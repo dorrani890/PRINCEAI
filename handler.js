@@ -612,18 +612,15 @@ if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
     }
 }
          
-
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
 ) {
-  // Check if the message meets the criteria for auto-reaction
   if (
-    (m.text && typeof m.text === 'string' && m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|E|I|O|U|t|u|v|w|x|y|z)/gi)) || 
+    (m.text && typeof m.text === 'string' && /[a-zA-Z]/.test(m.text)) || 
     (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) || 
     (m.isForwarded)
   ) {
-    // Define the emoji list for random reactions
     const emojiList = [
       "🌸", "😻", "🥰", "🎀", "🤗", "🤫", "🤭", "✨", "💝", "❤️", "♥️", "👑",
       "💞", "💖", "💓", "⚡️", "🌚", "😇", "🌚", "❤️‍🔥", "🖤", "❤️", "🧡", "💛",
@@ -633,13 +630,12 @@ if (
       "🤭", "🥹"
     ];
 
-    // Define the emoji matching mechanism
-    const emojis = [
+    const emojis = new Set([
       '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', '🦋', '🎀', '👑', '🫠', '🗿', 
-      '❤️', '🇵🇰', '👿', '❤️‍🩹', '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹', 
-      '😮‍💨', '😤', '😈', '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡', '💛', 
-      '💚', '🩵', '💙', '💜', '🤎', '🖤', '🩶', '🤍', '🩷', '💘', '💝', 
-      '💖', '💗', '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '❤️‍🩹', '💔', 
+      '❤️', '🇵🇰', '👿', '❤️‍🩹', '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹', '😊',
+      '😮‍💨', '😤', '😈', '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡', '💛', '🙄',
+      '💚', '🩵', '💙', '💜', '🤎', '🖤', '🩶', '🤍', '🩷', '💘', '💝', '😩',
+      '💖', '💗', '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '❤️‍🩹', '💔', '🤡',
       '❤️‍🔥', '💋', '🫦', '👅', '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', 
       '🍒', '🍎', '🍆', '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', 
       '🎈', '🎗️', '🤣', '😭', '😅', '😆', '😁', '😄', '😃', '😀', '😉', 
@@ -650,54 +646,29 @@ if (
       '🫨', '😲', '😳', '🥶', '🌝', '😹', '😻', '😼', '😽', '🙀', '😾', 
       '🌟', '✨', '💥', '🔥', '😸', '😺', '🙉', '🙈', '🌜', '🌛', '✅', 
       '😎', '🤠', '😇', '👽', '💩', '👺', '👹', '🤝', '👈', '👉', '☝️', 
-      '🤙', '🫰', '🌈', '💫', '✨', '🍩', '🔪', '🚘'
-    ];
+      '🤙', '🫰', '🌈', '💫', '✨', '🍩', '🔪', '🚘', '🫰', '🫴', '👍'
+    ]);
 
-    const reply_emojis = [
-      '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', '🦋', '🎀', '👑', '🫠', 
-      '🗿', '❤️', '🇵🇰', '👿', '❤️‍🩹', '😍', '🥰', '😉', '🤣', '🫣', 
-      '🥺', '🥹', '😮‍💨', '😤', '😈', '😇', '☠️', '💀', '💫', '🔥', 
-      '💯', '🧡', '💛', '💚', '🩵', '💙', '💜', '🤎', '🖤', '🩶', 
-      '🤍', '🩷', '💘', '💝', '💖', '💗', '💓', '💞', '💕', '💌', 
-      '💟', '♥️', '❣️', '❤️‍🩹', '💔', '❤️‍🔥', '💋', '🫦', '👅', 
-      '🫶', '💪', '🌈', '🔥', '🌹', '🥀', '🌸', '🍒', '🍎', '🍆', 
-      '🍑', '🗿', '🕋', '🎁', '🎀', '🎉', '🎊', '🎂', '🎈', '🎗️', 
-      '🤣', '😭', '😅', '😆', '😁', '😄', '😃', '😀', '😉', '😗', 
-      '😙', '😚', '😘', '😍', '🤩', '🥳', '🫠', '😝', '😛', '🤤', 
-      '🤐', '😬', '😑', '🤔', '🧐', '🤨', '😱', '🫣', '🤗', '🥱', 
-      '🤭', '🤫', '🥵', '🫤', '🙁', '☹️', '😟', '😥', '😢', '😒', 
-      '😮‍💨', '😤', '🤬', '😡', '😠', '😞', '😓', '😩', '😧', '😦', 
-      '😫', '😵‍💫', '😯', '🫨', '😲', '😳', '🥶', '🌝', '😹', '😻', 
-      '😼', '😽', '🙀', '😾', '🌟', '✨', '💥', '🔥', '😸', '😺', 
-      '🙉', '🙈', '🌜', '🌛', '✅', '😎', '🤠', '😇', '👽', '💩', 
-      '👺', '👹', '🤝', '👈', '👉', '☝️', '🤙', '🫰', '🌈', '💫', 
-      '✨', '🍩', '🔪', '🚘'
-    ];
+    const userReactions = {
+      "923006838210@s.whatsapp.net": "👑",
+      "923277968349@s.whatsapp.net": "👑",
+      "923126522826@s.whatsapp.net": "🇵🇰",
+      "923126329047@s.whatsapp.net": "🇵🇰"
+    };
 
     let reactionEmoji;
 
-    // Check if the message contains any of the predefined emojis
-    for (let i = 0; i < emojis.length; i++) {
-      if (m.text && m.text.includes(emojis[i])) {
-        reactionEmoji = reply_emojis[i];
-        break;
+    // Check if message text contains any predefined emoji
+    if (m.text) {
+      const matchedEmoji = [...emojis].find(emoji => m.text.includes(emoji));
+      if (matchedEmoji) {
+        reactionEmoji = matchedEmoji;
       }
     }
 
-    // If no matching emoji is found, use the existing logic
+    // If no specific emoji was found, check user-specific reactions
     if (!reactionEmoji) {
-      switch (m.sender) {
-        case '923006838210@s.whatsapp.net':
-        case '923277968349@s.whatsapp.net':
-          reactionEmoji = "👑";
-          break;
-        case '923126522826@s.whatsapp.net':
-        case '923126329047@s.whatsapp.net':
-          reactionEmoji = "🇵🇰";
-          break;
-        default:
-          reactionEmoji = pickRandom(emojiList);
-      }
+      reactionEmoji = userReactions[m.sender] || pickRandom(emojiList);
     }
 
     // Send the reaction
@@ -709,15 +680,15 @@ if (
         }
       });
     } catch (error) {
-      console.error("Failed to send reaction:", error);
+      console.error(`Failed to send reaction for ${m.sender}:`, error);
     }
   }
 }
 
-// Helper function to pick a random item from a list
-function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-	 }
+// Optimized Random Picker
+function pickRandom(arr) {
+  return arr[Math.random() * arr.length | 0];
+}
 
 
 
