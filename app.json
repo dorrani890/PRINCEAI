@@ -1,0 +1,116 @@
+{
+  "name": "PRINCEAI",
+  "description": "whatsapp user bot",
+  "repository": "https://github.com/DASTAGHIR/PRINCEAI",
+  "logo": "https://qu.ax/lwgPL.jpg",
+  "success_url": "https://github.com/DASTAGHIR/PRINCEAI",
+  "keywords": [
+    "nodejs", "heroku", "bot", "urdu", "english", "indonesian", "arab", "portuguese", "italian", "french", "whatsapp",
+    "termux", "superbot", "multi-device", "md", "official", "javascript", "princebot"
+  ],
+  "image": "heroku/nodejs",
+  "stack": "container",
+  "env": {
+    "SESSION_ID": {
+      "description": "put your session ID here in the box below",
+      "required": true,
+      "value": ""
+    },
+    "BOT_NAME": {
+      "description": "put your BOT a name",
+      "required": true,
+      "value": "DURRANI-MD"
+    },
+    "MODE": {
+      "description": "choose bot mode public or private",
+      "required": true,
+      "value": "public"
+    },
+    "PREFIX": {
+      "description": "put any one symbol here leave it Blank if you want to use multiple prefix",
+      "required": false,
+      "value": "." 
+    },
+    "antidelete": {
+      "description": "Set 'private' to forward deleted messages only from private chats, 'all' to forward from both private and group chats, or 'false' to disable this feature.",
+      "required": false,
+      "value": "all"
+    },
+    "ANTI_LINK": {
+      "description": "it will dlt links and kick user",
+      "required": false,
+      "value": "false"
+    },
+    "AutoReaction": {
+      "description": "make it true to react on chats",
+      "required": false,
+      "value": "true"
+    },
+    "VAR_APP": {
+      "description": "put same app name you entered above",
+      "required": false,
+      "value": ""
+    },
+    "VAR_KEY": {
+      "description": "put heroku key click on accounts scroll down copy that key past here",
+      "required": false,
+      "value": ""
+    },
+    "STATUSVIEW": {
+      "description": "make it true to auto view status and likes",
+      "required": false,
+      "value": "true"
+    },
+    "FIXED_EMOJI": {
+      "description": "Add your favorites emoji for status likes! Note use only one emoji otherwise it will not working! Default Is 🇵🇰",
+      "required": false,
+      "value": ""
+    },
+    "STATUS_MSG": {
+      "description": "Status reply msg",
+      "required": false,
+      "value": "> *⚖️𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 - : ©𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃*"
+    },
+    "REJECTSCALLS": {
+      "description": "reject calls",
+      "required": false,
+      "value": "false"
+    },
+    "CALLMSG": {
+      "description": "Call msg for reject calls",
+      "required": false,
+      "value": "For now calls are restricted by my owner"
+    },
+    "ANTIFAKE_USERS": {
+      "description": "Add numbers to a variable. The bot will remove users from the group for these numbers. If a number isn’t in the variable, the bot will not take any action. To target all numbers, use this format: 1,2,3,4,5,6,7,8,9. ",
+      "required": false,
+      "value": "1,212,63,44"
+    },
+    "AUTO_APPROVE_USERS": {
+      "description": "Add numbers to a variable. The bot will approve group join requests for these numbers. If a number isn’t in the variable, the bot will reject the request. To allow all numbers, use this format: 1,2,3,4,5,6,7,8,9.",
+      "required": false,
+      "value": "70,880"
+    },
+    "PACK_NAME": {
+      "description": "put your stickers pack name",
+      "required": false,
+      "value": "Prince♥️"
+    },
+    "DL_MSG": {
+      "description": "Video downloader caption",
+      "required": true,
+      "value": "> *⚖️𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 - : ©𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃*"
+    } 
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/bogini/heroku-buildpack-graphicsmagick"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-activestorage-preview"
+    }
+  ]
+}
